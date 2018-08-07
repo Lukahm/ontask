@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load settings %}
+{% load static %}
+{% load django_tables2 %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block extrahead %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
+{% endblock extrahead %}
+{% block scripts %}
+  <script src="{% static 'logs/js/logs.js' %}{% otv %}"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+        $('#log-table').DataTable({
+          stateSave: true,
+          processing: true,
+          serverSide: true,
+          ajax: {
+            url: "{% url 'logs:show_ss' %}",
+            type: 'POST',
+          },
+          ordering: false,
+          "columnDefs": [
+              {"className": "dt-center", "targets": "_all"},
+          ],
+          language: {
+              "emptyTable": "No logs recorded for this workflow."
+          },
+          searchDelay: 500,
+          "drawCallback": function(settings) {
+             // Needed to enable tooltips in ajax produced content
+             $('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+          },
+        });
+    });
+  </script>
+{% endblock %}
+{% block title %}{{ block.super }}Logs{% endblock %}
+{% block container %}
+<div align="center" class="container">
+  <h1 class="page-header">Logs</h1>
+  <div class="container" id="csv-download">
+    <a href="{% url 'logs:export' workflow.id %}" download
+       class="btn btn-primary btn-sm js-logs-download"
+       data-toggle="tooltip"
+       title="Download a CSV file contining these logs">
+      <span class="glyphicon glyphicon-download-alt"></span> CSV Download
+    </a>
+  </div>
+  <table class="table display dataTable no-footer table-bordered"
+         id="log-table">
+    <thead>
+      <tr>
+        {% for cname in column_names %}
+          <th>{{ cname }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+  </table>
+  <div class="modal fade" id="modal-item" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock container %}

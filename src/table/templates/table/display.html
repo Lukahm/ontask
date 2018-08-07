@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load settings %}
+{% load static %}
+{% load django_tables2 %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block extrahead %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
+  <link href="{% static 'css/datetimepicker.css' %}" rel="stylesheet">
+  <link href="{% static 'site/css/query-builder.default.min.css' %}" rel="stylesheet">
+  <link href="{% static 'site/css/sol.css' %}" rel="stylesheet">
+{% endblock extrahead %}
+{% block scripts %}
+  <script src="{% static 'js/bootstrap-datetimepicker.js' %}"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+  <script src="{% static 'site/js/query-builder.standalone.min.js' %}" ></script>
+  <script src="{% static 'site/js/sol.js' %}"></script>
+  <script src="{% static 'table/js/table.js' %}{% otv %}"></script>
+  <script src="{% static 'workflow/js/column_move.js' %}{% otv %}"></script>
+  <script type="text/javascript">
+    if (document.getElementById("table-data") != null) {
+        // Required for DataTables
+        $(document).ready(function() {
+            table_data = $('#table-data').DataTable({
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                  url: "{{ ajax_url }}",
+                  type: 'POST',
+                },
+                "order": [1],
+                "columnDefs": [
+                    {"orderable": false, "targets": 0},
+                    {"searchable": false, "targets": 0},
+                    {"className": "dt-center", "targets": "_all"}
+                ],
+                "drawCallback": function(settings) {
+                   // Needed to enable tooltips in ajax produced content
+                   $('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+                },
+            });
+        });
+    }
+    var qbuilder_options = {
+      plugins: ['bt-tooltip-errors', 'not-group'],
+      operators: ['equal', 'not_equal', 'less', 'less_or_equal',
+                  'greater', 'greater_or_equal', 'between', 'not_between',
+                  'begins_with', 'not_begins_with', 'contains', 'not_contains',
+                  'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty'],
+      allow_empty: true,
+      filters: {{ query_builder_ops|safe }},
+      rules: [],
+    };
+  </script>
+{% endblock %}
+{% block title %}{{ block.super }}Table{% endblock %}
+{% block container %}
+  <div id="table-content" align="center" class="container-fluid"
+       style="padding-top:2ex;">
+    {% if view %}
+      <h4>Table view <strong>{{ view.name }}</strong></h4>
+    {% endif %}
+    {% if columns %}
+      <div style="padding-bottom: 2ex;">
+        <div class="dropdown" style="display:inline;">
+          <button class="btn btn-primary btn-sm dropdown-toggle" type="button"
+                  data-toggle="dropdown">Add <span class="caret"></span>
+          </button>
+          <ul role="menu" class="dropdown-menu">
+            <li>
+              <a href="{% url 'dataops:rowcreate' %}"
+                 class="btn btn-sm btn-defult"
+                 data-toggle="tooltip"
+                 title="Add an extra row to the table">
+                <span class="glyphicon glyphicon-plus"></span> Add row
+              </a>
+            </li>
+            <li>
+              <button type="button"
+                      class="btn btn-default btn-sm js-workflow-column-add"
+                      data-url="{% url 'workflow:column_add' %}"
+                      data-toggle="tooltip"
+                      title="Add a column to the table">
+                <span class="glyphicon glyphicon-plus"></span> Add column
+              </button>
+            </li>
+            <li>
+              <button type="button"
+                      class="btn btn-default btn-sm js-workflow-formula-column-add"
+                      data-url="{% url 'workflow:formula_column_add' %}"
+                      data-toggle="tooltip"
+                      title="Add a column operating with the current values">
+                <span class="glyphicon glyphicon-plus"></span> Add derived column
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="dropdown btn-group">
+          <a href="{% url 'table:view_index' %}"
+             class="btn btn-primary btn-sm"
+             data-toggle="tooltip"
+             title="Views available for this table">
+            <span class="glyphicon glyphicon-eye-open"></span> Views
+          </a>
+          {% if views %}
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button"
+                    data-toggle="dropdown"><span class="caret"></span>
+            </button>
+            <ul role="menu" class="dropdown-menu">
+            {% for v in views %}
+              <li>
+                <a href="{% url 'table:display_view' v.id %}"
+                   class="btn btn-default btn-sm">{{ v.name }}</a>
+              </li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+        {% if view %}
+          <button type="button"
+                  class="btn btn-primary btn-sm js-view-edit align-middle"
+                  data-url="{% url 'table:view_edit' view.id %}"
+                  data-toggle="tooltip" title="Change elements in view">
+            <span class="glyphicon glyphicon-pencil"></span> Edit view
+          </button>
+          <button type="button" class="btn btn-sm btn-default"
+                  onclick="location.href='{% url 'table:display' %}'">
+            Full table
+          </button>
+          <a href="{% url 'table:csvdownload_view' view.id %}" download
+             class="btn btn-primary btn-sm js-logs-download"
+             data-toggle="tooltip"
+             title="Download a CSV file contining this table">
+            <span class="glyphicon glyphicon-download-alt"></span> CSV Download
+          </a>
+        {% else %}
+          <a href="{% url 'table:csvdownload' %}" download
+             class="btn btn-primary btn-sm js-logs-download"
+             data-toggle="tooltip"
+             title="Download a CSV file contining this table">
+            <span class="glyphicon glyphicon-download-alt"></span> CSV Download
+          </a>
+        {% endif %}
+      </div>
+      <table class="table display dataTable no-footer cell-border table-bordered"
+             id="table-data">
+        <thead>
+          <tr>
+            <th rowspan="2"></th>
+            {% for col in columns %}
+              <th class="text-center">
+                <div class="dropdown">
+                  <button class="btn btn-primary btn-sm dropdown-toggle"
+                          type="button"
+                          data-toggle="dropdown">{{ col.name }}
+                    <span class="caret"></span>
+                  </button>
+                  <ul role="menu" class="dropdown-menu">
+                    {% if not col.is_key %}
+                      <li>
+                        <a href="{% url 'table:stat_column' col.id %}"
+                           class="btn btn-default btn-sm align-middle"
+                           data-toggle="tooltip"
+                           title="Stats and visualizations about this column">
+                          <span class="glyphicon glyphicon-stats"></span> Stats
+                        </a>
+                      </li>
+                    {% endif %}
+                    <li>
+                      <button type="button"
+                              class="btn btn-sm btn-default js-column-edit"
+                              data-url="{% url 'workflow:column_edit' col.id %}"
+                              data-toggle="tooltip"
+                              title="Edit column name, description, etc">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button"
+                              class="btn btn-default btn-sm js-column-clone align-middle"
+                              data-url="{% url 'workflow:column_clone' col.id %}"
+                              data-toggle="tooltip" title="Create an exact duplicate of this column">
+                          <span class="glyphicon glyphicon-duplicate"></span> Clone
+                      </button>
+                    </li>
+                    <li>
+                      <button type="button"
+                              class="btn btn-default btn-sm js-column-delete"
+                              data-url="{% url 'workflow:column_delete' col.id %}"
+                              data-toggle="tooltip" title="Delete column">
+                        <span class="glyphicon glyphicon-trash"></span> Delete
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </th>
+            {% endfor %}
+          </tr>
+          <tr>
+            {% for col in columns %}
+              <th>
+                <div style="display:block;">
+                {% if not col.is_active %}
+                  <font color="red" data-toggle="tooltip"
+                        title="Out of given date/time window. Edit column to enable.">
+                    Disabled</font>
+                {% endif %}
+                </div>
+                <div style="display:flex;justify-content:space-between">
+                  <div>
+                    {% if col.position != 1 %}
+                      <a href="{% url 'workflow:column_move_top' col.id %}"
+                         class="column-move-top"
+                         style="display:table-cell;">
+                        <span class="glyphicon glyphicon-step-backward"></span></a>
+                      <a href="{% url 'workflow:column_move_prev' col.id %}"
+                         class="column-move-prev"
+                         style="display:table-cell;">
+                        <span class="glyphicon glyphicon-chevron-left"></span></a>
+                    {% endif %}
+                  </div>
+                  {% if col.position != col.workflow.ncols %}
+                    <div>
+                    <a href="{% url 'workflow:column_move_next' col.id %}"
+                       class="column-move-next"
+                       style="display:table-cell;">
+                       <span
+                           class="glyphicon glyphicon-chevron-right"></span></a>
+                    <a href="{% url 'workflow:column_move_bottom' col.id %}"
+                       class="column-move-bottom"
+                       style="display:table-cell;">
+                      <span class="glyphicon glyphicon-step-forward"></span></a>
+                    </div>
+                  {% endif %}
+                </div>
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+      </table>
+    {% else %}
+      <p>The workflow does not have data.</p>
+      <p>Go to <a href="{% url 'dataops:uploadmerge' %}">Dataops</a> to upload
+          data</p>
+    {% endif %}
+    <div class="modal fade" id="modal-item" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock container %}

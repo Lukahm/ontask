@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load settings %}
+{% load static %}
+{% load django_tables2 %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block extrahead %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
+  <link href="{% static 'css/datetimepicker.css' %}" rel="stylesheet">
+{% endblock extrahead %}
+{% block scripts %}
+  <script src="{% static 'js/bootstrap-datetimepicker.js' %}"></script>
+  <script src="{% static 'action/js/action.js' %}{% otv %}"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      if (document.getElementById("action-table") != null) {
+        // Required for DataTables
+        $('#action-table').DataTable({
+          "search": {
+            "caseInsensitive": true,
+          },
+          stateSave: true,
+          "language": {
+            "emptyTable": "There are no actions for this workflow."
+          },
+          "columnDefs": [
+            {"className": "dt-center", "targets": "_all"},
+            {"orderable": false, "targets": 4},
+            {"searchable": false, "targets": 4},
+          ],
+        });
+      }
+    });
+  </script>
+{% endblock %}
+{% block title %}{{ block.super }}Actions{% endblock %}
+{% block container %}
+<div align="center" class="container">
+  <h1 class="page-header">Actions</h1>
+  <p>
+    <button type="button" class="btn btn-primary js-create-action"
+            data-url="{% url 'action:create' 0 %}"
+            data-toggle="tooltip"
+            title="New action to collect data from learners">
+      <span class="glyphicon glyphicon-plus"></span>
+        New Action In
+    </button>
+    <button type="button" class="btn btn-primary js-create-action"
+            data-url="{% url 'action:create' 1 %}"
+            data-toggle="tooltip"
+            title="New action to provide personalised content">
+      <span class="glyphicon glyphicon-plus"></span>
+        New Action Out
+    </button>
+    {% if has_table %}
+      <a href="{% url 'action:import' %}"
+         class="btn btn-primary"
+         data-toggle="tooltip" title="Import action previously exported">
+        <span class="glyphicon glyphicon-import"></span> Import action</a>
+    {% endif %}
+  </p>
+  {% render_table table %}
+  <div class="modal fade" id="modal-item" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock container %}

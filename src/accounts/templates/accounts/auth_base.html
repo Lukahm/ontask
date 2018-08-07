@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load crispy_forms_tags %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block container %}
+<div class="container form-box">
+  <div class="text-center">
+    <img src="{% static 'site/img/ontask-logo-1.png' %}" alt="OnTask Login"
+         style="width: 300px;"/>
+    <h2>{% block form_heading %}{% endblock %}</h2>
+  </div>
+  {% block form %}
+  {% endblock %}
+</div>
+
+{% endblock container %}
+

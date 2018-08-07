@@ -1,0 +1,71 @@
+<div class="container-fluid" id="condition-set" style="padding-bottom: 0.5ex;">
+  <h4 class="text-center"><strong>Text Conditions</strong>
+    <button type="button"
+            class="btn btn-sm btn-primary js-condition-create{% if not has_data %} disabled{% endif %}"
+            data-url="{% url 'action:create_condition' action.id %}"
+            style="margin-bottom: 0.5ex;"
+            data-toggle="tooltip"
+            title="Define a text condition to insert in the text body below.">
+      <span class="glyphicon glyphicon-plus"></span> New</button></h4>
+  <div class="conditions">
+    {% for condition in conditions %}
+      <div class="condition-btn btn-group">
+        <button type="button"
+                class="btn btn-primary btn-sm js-condition-edit"
+                data-url="{% url 'action:edit_condition' condition.id %}"
+                data-toggle="tooltip"
+                title="Edit the condition ({{ condition.n_rows_selected }} rows satisfy this condition)">
+          {{ condition.name }} ({{ condition.n_rows_selected }} learner{{ condition.n_rows_selected|pluralize:",s" }})
+        </button>
+        <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+          <span class="caret"></span>
+          <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <ul role="menu" class="dropdown-menu">
+          <li>
+            <button type="button"
+                    class="btn btn-default btn-sm js-condition-insert"
+                    data-name="{{ condition.name }}"
+                    data-toggle="tooltip"
+                    title="Insert text condition into the body.">
+              <span class="glyphicon glyphicon-arrow-down"></span> Insert in
+              text
+            </button>
+          </li>
+          <li>
+            <button type="button"
+                    class="btn btn-default btn-sm js-condition-edit"
+                    data-url="{% url 'action:edit_condition' condition.id %}"
+                    data-toggle="tooltip"
+                    title="Edit name, description and formula">
+              <span class="glyphicon glyphicon-pencil"></span> Edit
+            </button>
+          </li>
+          <li>
+            <a href="{% url 'action:clone_condition' condition.id %}"
+               class="btn btn-default btn-sm js-condition-clone"
+               data-url="{% url 'action:action_out_save_content' action.id %}"
+               data-toggle="tooltip"
+               title="Create an exact copy of this condition">
+              <span class="glyphicon glyphicon-duplicate"></span> Clone
+            </a>
+          </li>
+          <li>
+            <button type="button"
+                    class="btn btn-default btn-sm js-condition-delete"
+                    data-url="{% url 'action:delete_condition' condition.id %}"
+                    data-toggle="tooltip" title="Delete the condition">
+              <span class="glyphicon glyphicon-trash"></span> Delete
+            </button>
+          </li>
+        </ul>
+      </div>
+    {% empty %}
+      <p class="text-center">Create conditions to control the text in the
+        body below (optional)</p>
+    {% endfor %}
+  </div>
+</div>
+

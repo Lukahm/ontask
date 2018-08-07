@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block scripts %}
+  <script>
+    location.href="{% url 'workflow:export' include %}";
+    $('#div-spinner').hide();
+  </script>
+{% endblock scripts %}
+{% block title %}Done!{% endblock %}
+{% block container %}
+  <div class="container-fluid" style="text-align:center;">
+    <h1 class="page-header text-center">Workflow export</h1>
+    <p class="text-center">Done!</p>
+    <button type="button" class="btn btn-default"
+      onclick="location.href='{% url 'workflow:detail' wid %}'">Back
+    </button>
+  </div>
+{% endblock container %}

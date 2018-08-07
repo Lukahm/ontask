@@ -1,0 +1,6 @@
+User.objects.create_user(email='instructor1@bogus.com', password='boguspwd')
+User.objects.create_user(email='instructor2@bogus.com', password='boguspwd')
+User.objects.create_user(email='instructor3@bogus.com', password='boguspwd')
+User.objects.create_user(email='student1@bogus.com', password='boguspwd')
+User.objects.create_user(email='student2@bogus.com', password='boguspwd')
+User.objects.create_user(email='student3@bogus.com', password='boguspwd')

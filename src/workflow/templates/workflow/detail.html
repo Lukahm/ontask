@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load settings %}
+{% load static %}
+{% load django_tables2 %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block extrahead %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">
+  <link href="{% static 'css/datetimepicker.css' %}" rel="stylesheet">
+  <link href="{% static 'site/css/sol.css' %}" rel="stylesheet">
+{% endblock extrahead %}
+{% block scripts %}
+  {% if workflow %}
+    <script src="{% static 'js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'site/js/sol.js' %}"></script>
+    <script src="{% static 'workflow/js/workflow.js' %}{% otv %}"></script>
+    <script src="{% static 'workflow/js/column_move.js' %}{% otv %}"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript">
+      if (document.getElementById("column-table") != null) {
+          // Required for DataTables
+          $(document).ready(function() {
+              $('#column-table').DataTable({
+                  "stateSave": true,
+                  "processing": true,
+                  "serverSide": true,
+                  "ajax": {
+                    url: "{% url 'workflow:column_ss' workflow.id %}",
+                    type: 'POST',
+                  },
+                  "order": [],
+                  "columnDefs": [
+                      {"className": "dt-center", "targets": "_all"},
+                      {"orderable": false, "targets": "_all"},
+                      {"searchable": false, "targets": 4},
+                  ],
+                  "createdRow": function(row, data, dataIndex) {
+                      if (data[3] == '<span class="true">✔</span>') {
+                        $(row).addClass('success');
+                      }
+                  },
+                  "drawCallback": function(settings) {
+                     // Needed to enable tooltips in ajax produced content
+                     $('[data-toggle="tooltip"]').tooltip({ trigger: "hover" });
+                  },
+                });
+          });
+      }
+    </script>
+  {% endif %}
+{% endblock %}
+{% block title %}{{ block.super }}Details{% endblock %}
+{% block container %}
+<div class="container-fluid text-center">
+  <h1 class="page-header">Workflow Details</h1>
+  {% if workflow %}
+    <div style="display: inline-block;" id="workflow-area">
+      {% if not table_info %}
+        <p><strong>The workflow does not have data.</strong></p>
+        <h4>Go to <a href="{% url 'dataops:uploadmerge' %}">Dataops</a> to
+          upload data</h4>
+      {% endif %}
+      {% include 'workflow/includes/workflow_detail_buttons.html' %}
+      <p class="help-block"
+         style="max-width:400px;text-align:center;"><strong>Description
+        </strong>: {{ workflow.description_text }}</p>
+      <p class="help-block">Last modified: {{ workflow.modified }}</p>
+      {% if table_info %}
+        <p class="help-block">{{ table_info.num_rows }} rows, {{ table_info.num_cols }} columns (<mark>{{ num_key_columns }} Key columns</mark>), {{ table_info.num_actions }} actions, {{ table_info.num_attributes }}
+        attributes.</p>
+        <table class="table display dataTable no-footer table-bordered"
+               id="column-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Key?</th>
+              <th></th>
+            </tr>
+          </thead>
+        </table>
+      {% endif %}
+    </div>
+    <div class="modal fade" id="modal-item" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+      </div>
+    </div>
+  {% else %}
+    Go to <a href="{% url 'workflow:index' %}">your list of workflows</a>
+  {% endif %}
+</div>
+{% endblock container %}
+
+
+
+
