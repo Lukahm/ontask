@@ -9,6 +9,16 @@ body {
   padding-top:50px; /* To jump over the fixed nav-bar */
 }
 
+.action-step {     display: inline-block;
+    background: #d9edf7;
+    width: 38px;
+    height: 38px;
+    line-height: 41px;
+    border-radius: 22px;
+    position: relative;
+    color: black;
+    text-align: center;
+    font-size: 17px; }
 .starter-template {
   padding: 40px 15px;
   text-align: center;
