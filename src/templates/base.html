@@ -121,7 +121,7 @@
     {% endblock navbar %}
     {% if request.session.ontask_workflow_name %}
       <div id="wflow-name" class="text-center alert alert-info">
-        {{ request.session.ontask_workflow_name }}
+        Workflow: {{ request.session.ontask_workflow_name }}
       </div>
     {% endif %}
     {% block messages %}
