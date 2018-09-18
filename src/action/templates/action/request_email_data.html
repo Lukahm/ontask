@@ -13,7 +13,7 @@
   <div class="container" style="max-width: 500px;">
     {% if action.is_out %}
       {% if num_msgs > 0 %}
-        <p>{{ num_msgs }} Emails will be sent. </p>
+        <p>{{ num_msgs }} Email(s) will be sent. </p>
         <form action="" method="post">
           {% csrf_token %}
           <div class="input-group input-group-lg">
@@ -40,7 +40,7 @@
       {% endif %}
     {% else %}
       {% if num_msgs > 0 %}
-        <p>{{ num_msgs }} Emails will be sent. </p>
+        <p>{{ num_msgs }} Email(s) will be sent. </p>
        <pre>{{ url_text }}</pre>
       {% else %}
         <p>The action does not apply to any data. <a
