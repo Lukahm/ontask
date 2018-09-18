@@ -27,6 +27,10 @@
        data-toggle="tooltip"
        title="Enter data manually">
       <span class="glyphicon glyphicon-off"></span> Run</a>
+     <a href="{% url 'action:send_email' id %}"
+       class="btn btn-primary btn-sm"
+        data-toggle="tooltip" title="Send personalised emails">
+      <span class="glyphicon glyphicon-envelope"></span> Email</a>
   {% endif %}
   <button class="btn btn-primary btn-sm dropdown-toggle" type="button"
           data-toggle="dropdown"> More <span class="caret"></span>
