@@ -39,7 +39,14 @@
           filter</a></p>
       {% endif %}
     {% else %}
-    <pre>{{ url_text }}</pre>
+      {% if num_msgs > 0 %}
+        <p>{{ num_msgs }} Emails will be sent. </p>
+       <pre>{{ url_text }}</pre>
+      {% else %}
+        <p>The action does not apply to any data. <a
+                href="{% url 'action:edit_in' action.id %}">Review the action
+          filter</a></p>
+      {% endif %}
     {% endif %}
   </div>
     <div class="modal fade" id="modal-item" data-backdrop="static" data-keyboard="false">
