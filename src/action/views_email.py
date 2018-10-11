@@ -42,6 +42,9 @@ def request_data(request, pk):
     form = EmailActionForm(request.POST or None,
                            column_names=workflow.get_column_names())
 
+    # Create the text for the action
+    url_text = reverse('action:serve', kwargs={'action_id': action.pk})
+
     # Process the POST
     if request.method == 'POST':
         if form.is_valid():
