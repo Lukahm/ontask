@@ -55,7 +55,8 @@ def request_data(request, pk):
                                    form.cleaned_data['email_column'],
                                    request.user.email,
                                    form.cleaned_data['send_confirmation'],
-                                   form.cleaned_data['track_read'])
+                                   form.cleaned_data['track_read'],
+                                   request.build_absolute_uri(url_text))
 
             if result:
                 # Something went wrong
