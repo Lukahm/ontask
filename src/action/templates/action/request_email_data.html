@@ -41,7 +41,22 @@
     {% else %}
       {% if num_msgs > 0 %}
         <p>{{ num_msgs }} Email(s) will be sent. </p>
-       <pre>{{ url_text }}</pre>
+        <p class="lead">The following URL will be sent.</p>
+        <pre>{{ url_text }}</pre>
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="input-group input-group-lg">
+            {{ form|crispy }}
+            <div style="margin: 1ex 0 1ex 0;">
+              <a type="button" class="btn btn-default"
+                 href="{% url 'action:index' %}" style="margin-right:2ex;"> Cancel
+              </a>
+              <button type="Submit" name="Submit" value="Send"
+                      style="margin-right:2ex;"
+                      class="btn btn-success">Send</button>
+            </div>
+          </div>
+        </form>
       {% else %}
         <p>The action does not apply to any data. <a
                 href="{% url 'action:edit_in' action.id %}">Review the action
