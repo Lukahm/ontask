@@ -458,16 +458,29 @@ def send_messages(user,
          'from_email': str(getattr(settings, 'NOTIFICATION_SENDER')),
          'to_email': [user.email]})
 
-    # Send email out
-    try:
-        send_mail(
-            str(getattr(settings, 'NOTIFICATION_SUBJECT')),
-            text_content,
-            str(getattr(settings, 'NOTIFICATION_SENDER')),
-            [user.email],
-            html_message=html_content)
-    except Exception as e:
-        return 'An error occurred when sending your notification: ' + e.message
+
+    if action.is_out:
+        # Send email out
+        try:
+            send_mail(
+                str(getattr(settings, 'NOTIFICATION_SUBJECT')),
+                text_content,
+                str(getattr(settings, 'NOTIFICATION_SENDER')),
+                [user.email],
+                html_message=html_content)
+        except Exception as e:
+            return 'An error occurred when sending your notification: ' + e.message
+    else:
+        # Send email out
+        try:
+            send_mail(
+                str(getattr(settings, 'NOTIFICATION_SUBJECT')),
+                text_content,
+                str(getattr(settings, 'NOTIFICATION_SENDER')),
+                [user.email],
+                html_message=url)
+        except Exception as e:
+            return 'An error occurred when sending your notification: ' + e.message
 
     return None
 
