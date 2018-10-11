@@ -278,7 +278,8 @@ def send_messages(user,
                   email_column,
                   from_email,
                   send_confirmation,
-                  track_read):
+                  track_read,
+                  url):
     """
     Performs the submission of the emails for the given action and with the
     given subject. The subject will be evaluated also with respect to the
@@ -428,7 +429,9 @@ def send_messages(user,
         'email_sent_datetime': now,
         'filter_present': filter is not None,
         'num_rows': action.workflow.nrows,
-        'num_selected': filter.n_rows_selected if filter else -1}
+        'num_selected': filter.n_rows_selected if filter else -1,
+        'url':url },
+
 
     # Create template and render with context
     try:
