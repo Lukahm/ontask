@@ -12,6 +12,8 @@ from action.views_action import preview_response
 from ontask.permissions import is_instructor
 from workflow.ops import get_workflow
 from .forms import EmailActionForm
+from django.shortcuts import redirect, reverse, render
+
 
 
 @user_passes_test(is_instructor)
