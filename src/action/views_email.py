@@ -81,11 +81,14 @@ def request_data(request, pk):
         # There is no filter in the action, so take the number of rows
         num_msgs = workflow.nrows
 
+
+
     # Render the form
     return render(request,
                   'action/request_email_data.html',
                   {'action': action,
                    'num_msgs': num_msgs,
+                   'url_text': request.build_absolute_uri(url_text),
                    'form': form})
 
 
